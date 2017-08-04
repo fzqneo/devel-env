@@ -1,0 +1,37 @@
+- name: Clone Powerlevel9k
+  git:
+      repo: https://github.com/bhilburn/powerlevel9k.git
+      dest: /home/{{ ansible_user }}/.oh-my-zsh/custom/themes/powerlevel9k
+  register: powerlevel9k_clone
+
+- block:
+    - name: Select Powerlevel9k theme
+      lineinfile:
+          path: /home/{{ ansible_user }}/.zshrc
+          regexp: '^ZSH_THEME='
+          line: 'ZSH_THEME=powerlevel9k/powerlevel9k'
+          state: present
+    
+    - name: Configure Powerlevel9k style
+      blockinfile:
+          path: /home/{{ ansible_user }}/.zshrc
+          backup: yes
+          insertafter: '^ZSH_THEME='
+          marker: '# {mark} Ansible managed Powerlevel9k style'
+          block: |
+              POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+              POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon dir vcs)
+              POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status virtualenv anaconda time)
+              POWERLEVEL9K_OS_ICON_BACKGROUND="white"
+              POWERLEVEL9K_OS_ICON_FOREGROUND="blue"
+              POWERLEVEL9K_DIR_HOME_FOREGROUND="white"
+              POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND="white"
+              POWERLEVEL9K_DIR_DEFAULT_FOREGROUND="white"
+              POWERLEVEL9K_VIRTUALENV_FOREGROUND="green"
+  when: powerlevel9k_clone|succeeded
+
+
+
+
+
+

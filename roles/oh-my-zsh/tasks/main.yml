@@ -1,0 +1,34 @@
+---
+
+- name: Install git and zsh
+  become: yes
+  package: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - git
+  - zsh
+  register: zshinstalled
+
+- name: Clone oh-my-zsh repo
+  git: 
+      repo: https://github.com/robbyrussell/oh-my-zsh.git
+      dest: /home/{{ ansible_user }}/.oh-my-zsh
+  when: zshinstalled|succeeded
+  register: omzcloned
+
+- name: Install oh-my-zsh
+  copy:
+      src: /home/{{ ansible_user }}/.oh-my-zsh/templates/zshrc.zsh-template
+      remote_src: True
+      dest: /home/{{ ansible_user }}/.zshrc
+      force: yes
+      backup: yes
+  when: omzcloned|changed
+  register: omzinstalled
+
+- include: powerlevel9k.yml
+  when: omzinstalled|succeeded
+
+- include: zsh-syntax-highlighting.yml
+  when: zshinstalled|succeeded
