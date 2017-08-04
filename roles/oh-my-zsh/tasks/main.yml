@@ -27,6 +27,14 @@
   when: omzcloned|changed
   register: omzinstalled
 
+- name: Configure oh-my-zsh plugins
+  lineinfile:
+      path: /home/{{ ansible_user }}/.zshrc
+      regexp: '^plugins=\('
+      line: 'plugins=(git history history-substring-search docker)'
+  when: omzinstalled|succeeded
+
+
 - include: powerlevel9k.yml
   when: omzinstalled|succeeded
 
