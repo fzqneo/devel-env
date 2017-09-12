@@ -1,0 +1,24 @@
+- name: Create temp directory
+  tempfile:
+      state: directory
+      suffix: "-powerline-fonts"
+  register: create_temp_dir
+
+- name: Clone fonts repo
+  git:
+      repo: https://github.com/powerline/fonts.git
+      depth: 1
+      dest: "{{ create_temp_dir.path }}"
+  when: create_temp_dir|succeeded
+  register: clone_fonts_repo
+
+- name: Install fonts
+  shell: "{{ create_temp_dir.path }}/install.sh"
+  when: clone_fonts_repo|succeeded
+
+- name: Clean up
+  file:
+      path: "{{ create_temp_dir.path }}"
+      state: absent
+  when: create_temp_dir|succeeded
+  
