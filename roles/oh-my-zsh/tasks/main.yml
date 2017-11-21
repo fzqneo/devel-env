@@ -1,47 +1,31 @@
 ---
-
-- name: Install git and zsh
-  become: yes
-  package: 
-    name: "{{ item }}"
-    state: present
-  with_items:
-  - git
-  - zsh
-  register: zshinstalled
-
 - name: Clone oh-my-zsh repo
   git: 
       repo: https://github.com/robbyrussell/oh-my-zsh.git
-      dest: /home/{{ ansible_user }}/.oh-my-zsh
-  when: zshinstalled|succeeded
-  register: omzcloned
+      dest: '{{ ansible_env.HOME }}/.oh-my-zsh'
 
+# FIXME simple copying remove any modifcation before this point
 - name: Install oh-my-zsh
   copy:
-      src: /home/{{ ansible_user }}/.oh-my-zsh/templates/zshrc.zsh-template
+      src: '{{ ansible_env.HOME }}/.oh-my-zsh/templates/zshrc.zsh-template'
       remote_src: True
-      dest: /home/{{ ansible_user }}/.zshrc
+      dest: '{{ ansible_env.HOME }}/.zshrc'
       force: yes
       backup: yes
-  when: omzcloned|changed
-  register: omzinstalled
 
+# Don't use regex because the default value may not be written in single line
 - name: Configure oh-my-zsh plugins
   lineinfile:
-      path: /home/{{ ansible_user }}/.zshrc
-      regexp: '^plugins=\('
-      line: 'plugins=(git history history-substring-search docker)'
-  when: omzinstalled|succeeded
-
+      path: '{{ ansible_env.HOME }}/.zshrc'
+      insertbefore: 'source \$ZSH/oh-my-zsh.sh'
+      line: 'plugins=(git history history-substring-search docker command-not-found)'
 
 - include: powerlevel9k.yml
-  when: omzinstalled|succeeded
 
 - include: powerline-fonts.yml
-  when: omzinstalled|succeeded
 
 - include: zsh-syntax-highlighting.yml
-  when: zshinstalled|succeeded
+
+
 
 

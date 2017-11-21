@@ -1,0 +1,13 @@
+- name: Clone zsh-syntax-highlighting
+  git:
+      repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+      dest: '{{ ansible_env.HOME }}/.zsh-syntax-highlighting'
+
+- name: Source zsh-syntax-highlighting in .zshrc
+  lineinfile:
+      path: '{{ ansible_env.HOME }}/.zshrc'
+      backup: yes
+      line: 'source {{ ansible_env.HOME }}/.zsh-syntax-highlighting/zsh-syntax-highlighting.zsh'
+
+
+  

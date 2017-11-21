@@ -1,0 +1,14 @@
+---
+- name: Clone fzf repo
+  git:
+    repo: https://github.com/junegunn/fzf.git
+    depth: 1
+    dest: '{{ ansible_env.HOME }}/.fzf'
+
+- name: Install fzf
+  expect:
+    command: '{{ ansible_env.HOME }}/.fzf/install'
+    responses:
+      'fuzzy auto-completion': y
+      'key bindings': y
+      'update your shell configuration files': y

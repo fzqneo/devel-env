@@ -1,0 +1,17 @@
+---
+- name: Install tmux
+  become: yes
+  package:
+    name: tmux
+    state: present
+
+- name: Configure tmux status bar
+  blockinfile:
+    path: '{{ ansible_env.HOME }}/.tmux.conf'
+    create: yes
+    backup: yes
+    marker: '# {mark} Ansible managed status bar'
+    block: |
+      set -g window-status-format '#I:#(pwd="#{pane_current_path}"; echo ${pwd####*/})#F'
+      set -g window-status-current-format '#I:#(pwd="#{pane_current_path}"; echo ${pwd####*/})#F'
+      set-option -g status-interval 1

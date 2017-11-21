@@ -1,4 +1,8 @@
 ---
-- hosts: localhost
+- hosts: all
+  user: zf
   roles:
-      - oh-my-zsh
+    - zsh
+    - oh-my-zsh
+    - tmux
+    - fzf
